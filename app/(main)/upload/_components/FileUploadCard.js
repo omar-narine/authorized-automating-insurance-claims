@@ -2,6 +2,13 @@
 import { Button, Card, CardBody, CardHeader, Input, Chip } from "@heroui/react";
 import { NewFile, CheckIcon, CloseIcon } from "@heroui/shared-icons";
 import { useState } from "react";
+import { Document, Page, pdfjs } from "react-pdf";
+
+// Configure PDF.js worker (recommended method for Next.js App Router)
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  "pdfjs-dist/build/pdf.worker.min.mjs",
+  import.meta.url
+).toString();
 
 export default function FileUploadCard({
   title,
@@ -12,11 +19,16 @@ export default function FileUploadCard({
   onRemoveFile,
 }) {
   const [dragActive, setDragActive] = useState(false);
+  const [numPages, setNumPages] = useState(null);
 
   const handleFileUpload = (selectedFile) => {
     if (selectedFile) {
       onFileChange(selectedFile);
     }
+  };
+
+  const onDocumentLoadSuccess = ({ numPages }) => {
+    setNumPages(numPages);
   };
 
   const handleDrag = (e) => {
@@ -113,7 +125,7 @@ export default function FileUploadCard({
             <Button
               color={colorClasses.button}
               variant="bordered"
-              onClick={() =>
+              onPress={() =>
                 document
                   .getElementById(
                     `${title.toLowerCase().replace(/\s+/g, "-")}-upload`
@@ -141,7 +153,7 @@ export default function FileUploadCard({
                 size="sm"
                 variant="light"
                 color="danger"
-                onClick={onRemoveFile}
+                onPress={onRemoveFile}
               >
                 <CloseIcon className="w-4 h-4" />
               </Button>
@@ -150,14 +162,32 @@ export default function FileUploadCard({
             {/* File Preview */}
             {preview && (
               <div className="border rounded-lg p-4">
-                <h4 className="text-sm font-medium mb-2">Preview:</h4>
+                <h4 className="text-sm font-medium mb-2">File Overview:</h4>
                 {typeof preview === "string" ? (
+                  // Handle image previews
                   <img
                     src={preview}
                     alt={`${title} Preview`}
                     className="max-w-full h-auto rounded border"
                   />
+                ) : preview.type === "application/pdf" ? (
+                  // Handle PDF previews with full support
+                  <div className="max-w-full max-h-[600px] overflow-auto border rounded">
+                    <Document file={file} onLoadSuccess={onDocumentLoadSuccess}>
+                      {Array.from(new Array(numPages), (el, index) => (
+                        <div key={`page_${index + 1}`} className="mb-4">
+                          <Page
+                            pageNumber={index + 1}
+                            width={400}
+                            renderTextLayer={false}
+                            renderAnnotationLayer={false}
+                          />
+                        </div>
+                      ))}
+                    </Document>
+                  </div>
                 ) : (
+                  // Handle other file types
                   <div className="text-sm text-default-500">
                     <p>
                       <strong>File:</strong> {preview.name}

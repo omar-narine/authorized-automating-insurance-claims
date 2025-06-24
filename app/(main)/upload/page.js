@@ -2,7 +2,7 @@
 import { Button, Card, CardBody, CardHeader, Progress } from "@heroui/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import FileUploadCard from "../_components/FileUploadCard";
+import FileUploadCard from "./_components/FileUploadCard";
 
 export default function UploadPage() {
   const router = useRouter();
@@ -45,19 +45,6 @@ export default function UploadPage() {
     }
 
     setIsUploading(true);
-    setUploadProgress(0);
-
-    // Simulate brief upload progress
-    const interval = setInterval(() => {
-      setUploadProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setIsUploading(false);
-          return 100;
-        }
-        return prev + 20;
-      });
-    }, 100);
 
     // After brief progress, navigate to process page
     setTimeout(() => {
@@ -157,7 +144,7 @@ export default function UploadPage() {
           <Button
             color="primary"
             size="lg"
-            onClick={handleSubmit}
+            onPress={handleSubmit}
             isDisabled={!paFormFile || !referralFile || isUploading}
             isLoading={isUploading}
           >
@@ -166,7 +153,7 @@ export default function UploadPage() {
           <Button
             variant="bordered"
             size="lg"
-            onClick={() => {
+            onPress={() => {
               setPaFormFile(null);
               setReferralFile(null);
               setPaFormPreview(null);
@@ -198,7 +185,7 @@ export default function UploadPage() {
                 PNG
               </p>
               <p>
-                <strong>Maximum file size:</strong> 10MB per file
+                <strong>Maximum file size:</strong> 50MB per file
               </p>
             </div>
           </CardBody>
