@@ -1,9 +1,11 @@
 "use client";
 import { Button, Card, CardBody, CardHeader, Progress } from "@heroui/react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import FileUploadCard from "../_components/FileUploadCard";
 
 export default function UploadPage() {
+  const router = useRouter();
   const [paFormFile, setPaFormFile] = useState(null);
   const [referralFile, setReferralFile] = useState(null);
   const [paFormPreview, setPaFormPreview] = useState(null);
@@ -45,7 +47,7 @@ export default function UploadPage() {
     setIsUploading(true);
     setUploadProgress(0);
 
-    // Simulate upload progress
+    // Simulate brief upload progress
     const interval = setInterval(() => {
       setUploadProgress((prev) => {
         if (prev >= 100) {
@@ -53,16 +55,37 @@ export default function UploadPage() {
           setIsUploading(false);
           return 100;
         }
-        return prev + 10;
+        return prev + 20;
       });
-    }, 200);
+    }, 100);
 
-    // Here you would typically upload the files to your server
-    // For now, we'll just simulate the upload
+    // After brief progress, navigate to process page
     setTimeout(() => {
       setIsUploading(false);
-      alert("Files uploaded successfully!");
-    }, 2000);
+
+      // Prepare file data for navigation
+      const paFormData = {
+        name: paFormFile.name,
+        size: paFormFile.size,
+        type: paFormFile.type,
+        preview: paFormPreview,
+      };
+
+      const referralData = {
+        name: referralFile.name,
+        size: referralFile.size,
+        type: referralFile.type,
+        preview: referralPreview,
+      };
+
+      // Navigate to process page with file data
+      const queryParams = new URLSearchParams({
+        paForm: encodeURIComponent(JSON.stringify(paFormData)),
+        referral: encodeURIComponent(JSON.stringify(referralData)),
+      });
+
+      router.push(`/process?${queryParams.toString()}`);
+    }, 500);
   };
 
   return (
@@ -116,7 +139,7 @@ export default function UploadPage() {
             <CardBody>
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span>Uploading files...</span>
+                  <span>Preparing documents...</span>
                   <span>{uploadProgress}%</span>
                 </div>
                 <Progress
@@ -138,7 +161,7 @@ export default function UploadPage() {
             isDisabled={!paFormFile || !referralFile || isUploading}
             isLoading={isUploading}
           >
-            {isUploading ? "Uploading..." : "Process Documents"}
+            {isUploading ? "Preparing..." : "Process Documents"}
           </Button>
           <Button
             variant="bordered"
