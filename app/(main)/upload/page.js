@@ -1,5 +1,13 @@
 "use client";
-import { Button, Card, CardBody, CardHeader, Progress } from "@heroui/react";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  Progress,
+  Switch,
+} from "@heroui/react";
+import { SunIcon, MoonIcon } from "@heroui/shared-icons";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import FileUploadCard from "./_components/FileUploadCard";
@@ -11,7 +19,12 @@ export default function UploadPage() {
   const [paFormPreview, setPaFormPreview] = useState(null);
   const [referralPreview, setReferralPreview] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
+  const [isDark, setIsDark] = useState(false);
+
+  const toggleDarkMode = () => {
+    setIsDark(!isDark);
+    document.documentElement.classList.toggle("dark");
+  };
 
   const handleFileUpload = (file, setFile, setPreview, fileType) => {
     if (file) {
@@ -48,8 +61,6 @@ export default function UploadPage() {
 
     // After brief progress, navigate to process page
     setTimeout(() => {
-      setIsUploading(false);
-
       // Prepare file data for navigation
       const paFormData = {
         name: paFormFile.name,
@@ -80,6 +91,19 @@ export default function UploadPage() {
       <div className="container mx-auto max-w-6xl">
         {/* Header */}
         <div className="text-center mb-8">
+          <div className="flex justify-between items-center mb-6">
+            <div></div> {/* Empty div for spacing */}
+            <div className="flex items-center gap-2">
+              <SunIcon className="w-4 h-4 text-default-500" />
+              <Switch
+                defaultSelected={isDark}
+                size="sm"
+                color="secondary"
+                onValueChange={toggleDarkMode}
+              />
+              <MoonIcon className="w-4 h-4 text-default-500" />
+            </div>
+          </div>
           <h1 className="text-3xl font-bold text-foreground mb-2">
             Document Upload
           </h1>
@@ -119,25 +143,6 @@ export default function UploadPage() {
             onRemoveFile={() => removeFile(setReferralFile, setReferralPreview)}
           />
         </div>
-
-        {/* Upload Progress */}
-        {isUploading && (
-          <Card className="mb-6">
-            <CardBody>
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span>Preparing documents...</span>
-                  <span>{uploadProgress}%</span>
-                </div>
-                <Progress
-                  value={uploadProgress}
-                  color="primary"
-                  className="w-full"
-                />
-              </div>
-            </CardBody>
-          </Card>
-        )}
 
         {/* Action Buttons */}
         <div className="flex justify-center gap-4">

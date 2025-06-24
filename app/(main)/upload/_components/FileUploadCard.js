@@ -1,5 +1,13 @@
 "use client";
-import { Button, Card, CardBody, CardHeader, Input, Chip } from "@heroui/react";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  Input,
+  Chip,
+  Divider,
+} from "@heroui/react";
 import { NewFile, CheckIcon, CloseIcon } from "@heroui/shared-icons";
 import { useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
@@ -85,126 +93,131 @@ export default function FileUploadCard({
   const colorClasses = getColorClasses();
 
   return (
-    <Card className="w-full">
-      <CardHeader className="pb-3">
-        <div className="flex items-center gap-2">
-          <NewFile className={colorClasses.icon} />
-          <h3 className="text-lg font-semibold">{title}</h3>
-          {file && (
-            <Chip color="success" variant="flat" size="sm">
-              <div className="flex items-center gap-2">
-                <CheckIcon className="w-3 h-3" />
-                Uploaded
-              </div>
-            </Chip>
-          )}
-        </div>
-      </CardHeader>
-      <CardBody className="pt-0">
-        {!file ? (
-          <div
-            className={`border-2 border-dashed border-divider rounded-lg p-6 text-center transition-colors ${
-              dragActive ? colorClasses.border : ""
-            }`}
-            onDragEnter={handleDrag}
-            onDragLeave={handleDrag}
-            onDragOver={handleDrag}
-            onDrop={handleDrop}
-          >
-            <NewFile className="w-12 h-12 text-default-400 mx-auto mb-4" />
-            <p className="text-sm text-default-500 mb-4">
-              Drag and drop your {title} here, or click to browse
-            </p>
-            <Input
-              type="file"
-              accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-              onChange={(e) => handleFileUpload(e.target.files[0])}
-              className="hidden"
-              id={`${title.toLowerCase().replace(/\s+/g, "-")}-upload`}
-            />
-            <Button
-              color={colorClasses.button}
-              variant="bordered"
-              onPress={() =>
-                document
-                  .getElementById(
-                    `${title.toLowerCase().replace(/\s+/g, "-")}-upload`
-                  )
-                  .click()
-              }
-            >
-              Choose File
-            </Button>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between p-3 bg-default-50 dark:bg-default-100 rounded-lg">
-              <div className="flex items-center gap-3">
-                <NewFile className={`w-8 h-8 ${colorClasses.icon}`} />
-                <div>
-                  <p className="font-medium text-sm">{file.name}</p>
-                  <p className="text-xs text-default-500">
-                    {formatFileSize(file.size)}
-                  </p>
+    <Card className="w-full bg-default-50 dark:bg-default-100 border border-divider">
+      <div className="flex flex-col gap-2">
+        <CardHeader className="pb-3 bg-default-white dark:bg-default-200 border-b border-divider rounded-lg">
+          <div className="flex items-center gap-2">
+            <NewFile className={colorClasses.icon} />
+            <h3 className="text-lg font-semibold">{title}</h3>
+            {file && (
+              <Chip color="success" variant="flat" size="sm">
+                <div className="flex items-center gap-2">
+                  <CheckIcon className="w-3 h-3" />
+                  Uploaded
                 </div>
-              </div>
-              <Button
-                isIconOnly
-                size="sm"
-                variant="light"
-                color="danger"
-                onPress={onRemoveFile}
-              >
-                <CloseIcon className="w-4 h-4" />
-              </Button>
-            </div>
-
-            {/* File Preview */}
-            {preview && (
-              <div className="border rounded-lg p-4">
-                <h4 className="text-sm font-medium mb-2">File Overview:</h4>
-                {typeof preview === "string" ? (
-                  // Handle image previews
-                  <img
-                    src={preview}
-                    alt={`${title} Preview`}
-                    className="max-w-full h-auto rounded border"
-                  />
-                ) : preview.type === "application/pdf" ? (
-                  // Handle PDF previews with full support
-                  <div className="max-w-full max-h-[600px] overflow-auto border rounded">
-                    <Document file={file} onLoadSuccess={onDocumentLoadSuccess}>
-                      {Array.from(new Array(numPages), (el, index) => (
-                        <div key={`page_${index + 1}`} className="mb-4">
-                          <Page
-                            pageNumber={index + 1}
-                            width={400}
-                            renderTextLayer={false}
-                            renderAnnotationLayer={false}
-                          />
-                        </div>
-                      ))}
-                    </Document>
-                  </div>
-                ) : (
-                  // Handle other file types
-                  <div className="text-sm text-default-500">
-                    <p>
-                      <strong>File:</strong> {preview.name}
-                    </p>
-                    <p>
-                      <strong>Size:</strong> {formatFileSize(preview.size)}
-                    </p>
-                    <p>
-                      <strong>Type:</strong> {preview.type}
-                    </p>
-                  </div>
-                )}
-              </div>
+              </Chip>
             )}
           </div>
-        )}
-      </CardBody>
+        </CardHeader>
+        <CardBody className="pt-0 bg-default-50 dark:bg-default-100">
+          {!file ? (
+            <div
+              className={`border-2 border-dashed border-divider rounded-lg p-6 text-center transition-colors bg-default-100 dark:bg-default-200 ${
+                dragActive ? colorClasses.border : ""
+              }`}
+              onDragEnter={handleDrag}
+              onDragLeave={handleDrag}
+              onDragOver={handleDrag}
+              onDrop={handleDrop}
+            >
+              <NewFile className="w-12 h-12 text-default-400 mx-auto mb-4" />
+              <p className="text-sm text-default-500 mb-4">
+                Drag and drop your {title} here, or click to browse
+              </p>
+              <Input
+                type="file"
+                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                onChange={(e) => handleFileUpload(e.target.files[0])}
+                className="hidden"
+                id={`${title.toLowerCase().replace(/\s+/g, "-")}-upload`}
+              />
+              <Button
+                color={colorClasses.button}
+                variant="bordered"
+                onPress={() =>
+                  document
+                    .getElementById(
+                      `${title.toLowerCase().replace(/\s+/g, "-")}-upload`
+                    )
+                    .click()
+                }
+              >
+                Choose File
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between p-3 bg-default-200 dark:bg-default-300 rounded-lg border border-divider">
+                <div className="flex items-center gap-3">
+                  <NewFile className={`w-8 h-8 ${colorClasses.icon}`} />
+                  <div>
+                    <p className="font-medium text-sm">{file.name}</p>
+                    <p className="text-xs text-default-500">
+                      {formatFileSize(file.size)}
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  isIconOnly
+                  size="sm"
+                  variant="light"
+                  color="danger"
+                  onPress={onRemoveFile}
+                >
+                  <CloseIcon className="w-4 h-4" />
+                </Button>
+              </div>
+
+              {/* File Preview */}
+              {preview && (
+                <div className="border border-divider rounded-lg p-4 bg-default-100 dark:bg-default-200">
+                  <h4 className="text-sm font-medium mb-2">File Overview:</h4>
+                  {typeof preview === "string" ? (
+                    // Handle image previews
+                    <img
+                      src={preview}
+                      alt={`${title} Preview`}
+                      className="max-w-full h-auto rounded border"
+                    />
+                  ) : preview.type === "application/pdf" ? (
+                    // Handle PDF previews with full support
+                    <div className="max-w-full max-h-[600px] overflow-auto border border-divider rounded bg-white dark:bg-default-50">
+                      <Document
+                        file={file}
+                        onLoadSuccess={onDocumentLoadSuccess}
+                      >
+                        {Array.from(new Array(numPages), (el, index) => (
+                          <div key={`page_${index + 1}`} className="mb-4">
+                            <Page
+                              pageNumber={index + 1}
+                              width={400}
+                              renderTextLayer={false}
+                              renderAnnotationLayer={false}
+                            />
+                          </div>
+                        ))}
+                      </Document>
+                    </div>
+                  ) : (
+                    // Handle other file types
+                    <div className="text-sm text-default-500">
+                      <p>
+                        <strong>File:</strong> {preview.name}
+                      </p>
+                      <p>
+                        <strong>Size:</strong> {formatFileSize(preview.size)}
+                      </p>
+                      <p>
+                        <strong>Type:</strong> {preview.type}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+        </CardBody>
+      </div>
     </Card>
   );
 }
